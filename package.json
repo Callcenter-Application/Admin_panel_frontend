@@ -1,0 +1,27 @@
+{
+  "name": "admin_panel_frontend",
+  "version": "1.0.0",
+  "description": "Admin panel for CallBook app",
+  "keywords": [
+    "Admin",
+    "User"
+  ],
+  "homepage": "https://github.com/Callcenter-Application/Admin_panel_frontend#readme",
+  "bugs": {
+    "url": "https://github.com/Callcenter-Application/Admin_panel_frontend/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Callcenter-Application/Admin_panel_frontend.git"
+  },
+  "license": "ISC",
+  "author": "LuisReyes970304",
+  "type": "module",
+  "main": "main.js",
+  "scripts": {
+    "test": "npm run dev"
+  },
+  "devDependencies": {
+    "vite": "^8.3.0"
+  }
+}
