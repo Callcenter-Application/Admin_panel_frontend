@@ -2,18 +2,22 @@
 // import heroImg from './assets/hero.png'
 // import reactLogo from './assets/react.svg'
 // import viteLogo from './assets/vite.svg'
+import { AdminPanel } from "./admin/adminPanel";
 import { Login } from "./login/login";
 import { createBrowserRouter } from "react-router";
 
-// 1. Define your routes using an array of objects
 const App = createBrowserRouter([
     {
         path: "/",
         children: [
             {
-                index: true, // Matches the base path '/'
-                element: <Login />,
+                index: true, 
+                element: <Login/>,
             },
+            {
+                path: "admin_panel",
+                element: <AdminPanel/>
+            }
         ],
     },
 ]);
