@@ -1,4 +1,387 @@
-export const Login = () => <></>;
-//This has to have all the data in login.html 
-//Delete the /src/pages/login.html and add in here all the information, functions, scripts and tags in here so the router start by showing a login.
-//Do not modify any aspect of the css, style, tag or script of the original login.
+import { useEffect } from 'react';
+
+const TAILWIND_CONFIG_SCRIPT = `
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "on-error": "#ffffff",
+            "on-surface": "#0b1c30",
+            "on-secondary-fixed-variant": "#003ea8",
+            "on-secondary-fixed": "#00174b",
+            "surface": "#f8f9ff",
+            "surface-container-high": "#dce9ff",
+            "surface-container": "#e5eeff",
+            "outline": "#757684",
+            "on-background": "#0b1c30",
+            "secondary-fixed": "#dbe1ff",
+            "secondary-fixed-dim": "#b4c5ff",
+            "surface-dim": "#cbdbf5",
+            "tertiary-fixed-dim": "#6bd8cb",
+            "error": "#ba1a1a",
+            "surface-bright": "#f8f9ff",
+            "on-primary-fixed": "#001453",
+            "on-secondary": "#ffffff",
+            "surface-container-highest": "#d3e4fe",
+            "on-tertiary": "#ffffff",
+            "secondary": "#0051d5",
+            "surface-tint": "#3755c3",
+            "primary": "#00288e",
+            "on-primary": "#ffffff",
+            "primary-container": "#1e40af",
+            "tertiary-fixed": "#89f5e7",
+            "secondary-container": "#316bf3",
+            "on-error-container": "#93000a",
+            "on-secondary-container": "#fefcff",
+            "on-tertiary-fixed-variant": "#005049",
+            "primary-fixed-dim": "#b8c4ff",
+            "surface-container-lowest": "#ffffff",
+            "on-primary-fixed-variant": "#173bab",
+            "on-tertiary-fixed": "#00201d",
+            "background": "#f8f9ff",
+            "surface-container-low": "#eff4ff",
+            "on-surface-variant": "#444653",
+            "inverse-on-surface": "#eaf1ff",
+            "tertiary-container": "#00554e",
+            "primary-fixed": "#dde1ff",
+            "outline-variant": "#c4c5d5",
+            "on-primary-container": "#a8b8ff",
+            "error-container": "#ffdad6",
+            "tertiary": "#003c36",
+            "inverse-primary": "#b8c4ff",
+            "surface-variant": "#d3e4fe",
+            "on-tertiary-container": "#5fcdbf",
+            "inverse-surface": "#213145"
+          },
+          "borderRadius": {
+            "DEFAULT": "0.125rem",
+            "lg": "0.25rem",
+            "xl": "0.5rem",
+            "full": "0.75rem"
+          },
+          "spacing": {
+            "space-xs": "0.25rem",
+            "space-xl": "2rem",
+            "space-sm": "0.5rem",
+            "gutter-lg": "1.5rem",
+            "margin": "1.5rem",
+            "gutter": "1rem",
+            "margin-mobile": "1rem",
+            "space-lg": "1.5rem",
+            "space-md": "1rem"
+          },
+          "fontFamily": {
+            "body-md": ["Inter"],
+            "label-md": ["Inter"],
+            "label-sm": ["Inter"],
+            "headline-lg": ["Inter"],
+            "body-sm": ["Inter"],
+            "body-lg": ["Inter"],
+            "label-lg": ["Inter"],
+            "headline-xl": ["Inter"],
+            "headline-sm": ["Inter"],
+            "headline-md": ["Inter"]
+          },
+          "fontSize": {
+            "body-md": ["14px", { "lineHeight": "20px", "letterSpacing": "0em", "fontWeight": "400" }],
+            "label-md": ["12px", { "lineHeight": "16px", "letterSpacing": "0.01em", "fontWeight": "600" }],
+            "label-sm": ["11px", { "lineHeight": "14px", "letterSpacing": "0.02em", "fontWeight": "600" }],
+            "headline-lg": ["24px", { "lineHeight": "32px", "letterSpacing": "-0.015em", "fontWeight": "600" }],
+            "body-sm": ["12px", { "lineHeight": "16px", "letterSpacing": "0.005em", "fontWeight": "400" }],
+            "body-lg": ["16px", { "lineHeight": "24px", "letterSpacing": "0em", "fontWeight": "400" }],
+            "label-lg": ["14px", { "lineHeight": "20px", "letterSpacing": "0em", "fontWeight": "500" }],
+            "headline-xl": ["32px", { "lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+            "headline-sm": ["16px", { "lineHeight": "24px", "letterSpacing": "-0.005em", "fontWeight": "600" }],
+            "headline-md": ["20px", { "lineHeight": "28px", "letterSpacing": "-0.01em", "fontWeight": "600" }]
+          }
+        }
+      }
+    }
+  `;
+
+function togglePasswordVisibility() {
+  const passwordInput = document.getElementById('password') as HTMLInputElement;
+  const passwordIcon = document.getElementById('password-icon');
+
+  if (passwordInput.type === 'password') {
+    passwordInput.type = 'text';
+    if (passwordIcon) passwordIcon.textContent = 'visibility_off';
+  } else {
+    passwordInput.type = 'password';
+    if (passwordIcon) passwordIcon.textContent = 'visibility';
+  }
+}
+
+function handleFormSubmit() {
+  const submitBtn = document.getElementById('submit-btn') as HTMLButtonElement;
+  const banner = document.getElementById('alert-banner');
+
+  // Feedback button transition
+  submitBtn.disabled = true;
+  submitBtn.classList.add('opacity-75');
+  submitBtn.innerHTML = `
+        <span class="material-symbols-outlined animate-spin text-lg" data-icon="progress_activity">progress_activity</span>
+        <span>Autenticando en FastAPI...</span>
+      `;
+
+  setTimeout(() => {
+    submitBtn.disabled = false;
+    submitBtn.classList.remove('opacity-75');
+    submitBtn.innerHTML = `
+          <span>Iniciar sesión</span>
+          <span class="material-symbols-outlined text-lg" data-icon="arrow_forward">arrow_forward</span>
+        `;
+    // Toggle sample contextual banner to verify behavior
+    banner?.classList.remove('hidden');
+  }, 1000);
+}
+
+export const Login = () => {
+  // React never executes <script> tags it renders on the client, so the Tailwind
+  // CDN script and its config must be injected imperatively for them to actually run.
+  useEffect(() => {
+    const cdnScript = document.createElement('script');
+    cdnScript.src = 'https://cdn.tailwindcss.com?plugins=forms,container-queries';
+
+    const configScript = document.createElement('script');
+    configScript.id = 'tailwind-config';
+    configScript.textContent = TAILWIND_CONFIG_SCRIPT;
+
+    cdnScript.onload = () => document.head.appendChild(configScript);
+    document.head.appendChild(cdnScript);
+
+    return () => {
+      cdnScript.remove();
+      configScript.remove();
+    };
+  }, []);
+
+  return (
+    <>
+      <title>Iniciar Sesión - CallCenter Enterprise Suite</title>
+      {/* Google Fonts: Inter */}
+      <link href="https://fonts.googleapis.com" rel="preconnect" />
+      <link crossOrigin="" href="https://fonts.gstatic.com" rel="preconnect" />
+      <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+      {/* Material Symbols Outlined */}
+      <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
+      <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
+      <style>
+        {`
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 20;
+      vertical-align: middle;
+    }
+  `}
+      </style>
+      <div className="bg-background text-on-surface font-body-md text-body-md antialiased min-h-screen flex flex-col selection:bg-surface-container selection:text-primary overflow-x-hidden">
+      {/* Top Decorative Enterprise Tone Bar */}
+      {/* Main Canvas Section */}
+      <main className="flex-1 min-h-screen grid grid-cols-1 lg:grid-cols-12 w-full">
+        {/* Left Hero / Brand & Operations Value Proposition */}
+        <div className="lg:col-span-6 xl:col-span-7 relative bg-gradient-to-br from-[#0a183d] via-[#00174b] to-[#000d2c] text-white p-8 sm:p-12 lg:p-16 flex flex-col justify-between overflow-hidden">
+          {/* Subtle ambient glow background decoration */}
+          <div className="absolute -top-32 -left-32 w-96 h-96 bg-primary-container/30 rounded-full blur-3xl pointer-events-none"></div>
+          <div className="absolute -bottom-32 -right-32 w-96 h-96 bg-secondary-container/20 rounded-full blur-3xl pointer-events-none"></div>
+          <div className="absolute inset-0 bg-[radial-gradient(#316bf3_1px,transparent_1px)] [background-size:24px_24px] opacity-10 pointer-events-none"></div>
+          {/* Left Column: Top Bar Branding */}
+          <div className="relative z-10 flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="w-11 h-11 rounded-xl bg-white/10 backdrop-blur-md border border-white/20 flex items-center justify-center text-secondary-fixed shadow-sm">
+                <span className="material-symbols-outlined text-2xl" data-icon="headset_mic">headset_mic</span>
+              </div>
+              <div>
+                <div className="flex items-center gap-2">
+                  <span className="font-headline-sm text-xl font-bold tracking-tight text-white">Call Center</span>
+                </div>
+                <p className="text-xs text-secondary-fixed-dim/80 font-medium">Telephony &amp; Workforce Operations</p>
+              </div>
+            </div>
+          </div>
+          {/* Left Column: Center Content & Value Proposition */}
+          <div className="relative z-10 my-auto py-10 space-y-8 max-w-xl">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary-container/50 border border-primary-fixed/20 text-xs text-primary-fixed font-medium">
+              <span className="material-symbols-outlined text-sm" data-icon="verified">verified</span>
+            </div>
+            <div className="space-y-4">
+              <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight text-white leading-tight font-headline-xl">
+                Gestión y Supervisión Telefónica para Equipos de Alto Rendimiento
+              </h1>
+              <p className="text-base sm:text-lg text-secondary-fixed-dim/90 font-normal leading-relaxed">
+                Optimiza la productividad de tus operadores, gestiona roles y permisos con seguridad de nivel bancario, y monitorea métricas en tiempo real respaldado por FastAPI.
+              </p>
+            </div>
+            {/* Feature Highlights / Cards */}
+            <div className="space-y-3.5 pt-2">
+              <div className="flex items-start gap-3.5 p-3.5 rounded-xl bg-white/5 border border-white/10 backdrop-blur-sm transition-all hover:bg-white/10">
+                <div className="w-9 h-9 rounded-lg bg-secondary-container/30 flex items-center justify-center text-secondary-fixed shrink-0 mt-0.5">
+                  <span className="material-symbols-outlined text-xl" data-icon="manage_accounts">manage_accounts</span>
+                </div>
+                <div>
+                  <h2 className="text-sm font-semibold text-white font-label-lg">Gestión Unificada de Usuarios &amp; Roles</h2>
+                  <p className="text-xs text-secondary-fixed-dim/80 mt-0.5">Control granular de operadores, supervisores y administradores con políticas de sesión estrictas.</p>
+                </div>
+              </div>
+              <div className="flex items-start gap-3.5 p-3.5 rounded-xl bg-white/5 border border-white/10 backdrop-blur-sm transition-all hover:bg-white/10">
+                <div className="w-9 h-9 rounded-lg bg-secondary-container/30 flex items-center justify-center text-secondary-fixed shrink-0 mt-0.5">
+                  <span className="material-symbols-outlined text-xl" data-icon="phone_in_talk">phone_in_talk</span>
+                </div>
+                <div>
+                  <h2 className="text-sm font-semibold text-white font-label-lg">Telefonía &amp; Gateway de Alta Disponibilidad</h2>
+                  <p className="text-xs text-secondary-fixed-dim/80 mt-0.5">Conexión directa WebRTC/SIP, enrutamiento inteligente de llamadas y telemetría de cola en vivo.</p>
+                </div>
+              </div>
+              <div className="flex items-start gap-3.5 p-3.5 rounded-xl bg-white/5 border border-white/10 backdrop-blur-sm transition-all hover:bg-white/10">
+                <div className="w-9 h-9 rounded-lg bg-secondary-container/30 flex items-center justify-center text-secondary-fixed shrink-0 mt-0.5">
+                  <span className="material-symbols-outlined text-xl" data-icon="lock">lock</span>
+                </div>
+                <div>
+                  <h2 className="text-sm font-semibold text-white font-label-lg">Seguridad &amp; Cifrado de Extremo a Extremo</h2>
+                  <p className="text-xs text-secondary-fixed-dim/80 mt-0.5">Autenticación por tokens Bearer TLS 256-bit y arquitectura de alto rendimiento con FastAPI.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+          {/* Left Column: Bottom Status Badge */}
+          <div className="relative z-10 pt-6 border-t border-white/10 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs text-secondary-fixed-dim/70">
+            <div className="flex items-center gap-2">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+            </div>
+          </div>
+        </div>
+        {/* Right Column: Login Form Canvas */}
+        <div className="lg:col-span-6 xl:col-span-5 bg-surface-container-lowest flex flex-col justify-between p-6 sm:p-10 lg:p-12 xl:p-16 border-l border-outline-variant/40 overflow-y-auto">
+          {/* Right Header Meta */}
+          <div className="flex items-center justify-between mb-6"></div>
+          {/* Center Form Card Wrapper */}
+          <div className="w-full max-w-md mx-auto my-auto space-y-6">
+            {/* Header & Branding */}
+            <div className="space-y-2">
+              <div className="flex items-center gap-3 mb-2">
+                <div className="w-10 h-10 rounded-lg bg-surface-container-low border border-outline-variant flex items-center justify-center text-primary shadow-xs">
+                  <span className="material-symbols-outlined text-2xl" data-icon="lock_person">lock_person</span>
+                </div>
+                <div>
+                  <span className="font-headline-sm text-lg font-bold text-primary tracking-tight">Iniciar Sesión</span>
+                  <p className="font-label-sm text-label-sm text-on-surface-variant font-medium">CallCenter Enterprise Suite</p>
+                </div>
+              </div>
+              <div className="pt-1">
+                <h2 className="font-headline-lg text-2xl font-bold text-on-surface tracking-tight">Bienvenido de vuelta</h2>
+                <p className="font-body-md text-sm text-on-surface-variant mt-1">Ingresa tus credenciales para acceder a la plataforma.</p>
+              </div>
+            </div>
+            {/* Semantic Alert: Error Feedback Demonstration State */}
+            <div className="flex items-start gap-3 p-3 rounded-lg bg-error-container text-on-error-container border border-error/20 hidden" id="alert-banner" role="alert">
+              <span className="material-symbols-outlined text-error flex-shrink-0 text-lg mt-0.5" data-icon="error">error</span>
+              <div className="flex-1">
+                <p className="font-label-md text-label-md font-semibold text-error">Credenciales no válidas</p>
+                <p className="font-body-sm text-body-sm text-on-surface-variant mt-0.5">Correo electrónico o contraseña incorrectos. Verifica tus datos de acceso.</p>
+              </div>
+              <button
+                aria-label="Cerrar alerta"
+                className="text-on-surface-variant hover:text-on-surface text-sm p-0.5 rounded transition-colors"
+                onClick={() => document.getElementById('alert-banner')?.classList.add('hidden')}
+                type="button"
+              >
+                <span className="material-symbols-outlined text-base" data-icon="close">close</span>
+              </button>
+            </div>
+            {/* Strict Login Form (FastAPI Compatible) */}
+            <form
+              className="space-y-5"
+              id="login-form"
+              onSubmit={(event) => {
+                event.preventDefault();
+                handleFormSubmit();
+              }}
+            >
+              {/* Email Field */}
+              <div className="space-y-1.5">
+                <div className="flex justify-between items-center">
+                  <label className="block font-label-md text-label-md text-on-surface font-semibold" htmlFor="email">Correo electrónico</label>
+                </div>
+                <div className="relative rounded-lg shadow-sm">
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-outline">
+                    <span className="material-symbols-outlined text-lg" data-icon="mail">mail</span>
+                  </div>
+                  <input
+                    autoComplete="email"
+                    className="block w-full pl-10 pr-3 py-2.5 rounded-lg border border-outline-variant bg-surface-container-lowest text-on-surface placeholder:text-outline focus:outline-none focus:ring-2 focus:ring-secondary focus:border-transparent font-body-md text-body-md transition duration-150"
+                    id="email"
+                    name="email"
+                    placeholder="usuario@empresa.com"
+                    required
+                    type="email"
+                    defaultValue=""
+                  />
+                </div>
+                <p className="font-body-sm text-body-sm text-on-surface-variant">Dirección corporativa registrada en el servidor de telefonía.</p>
+              </div>
+              {/* Password Field */}
+              <div className="space-y-1.5">
+                <div className="flex justify-between items-center">
+                  <label className="block font-label-md text-label-md text-on-surface font-semibold" htmlFor="password">Contraseña</label>
+                  <a className="font-label-md text-label-md text-secondary hover:text-primary hover:underline transition-colors" href="#">
+                    ¿Olvidaste tu contraseña?
+                  </a>
+                </div>
+                <div className="relative rounded-lg shadow-sm">
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-outline">
+                    <span className="material-symbols-outlined text-lg" data-icon="lock">lock</span>
+                  </div>
+                  <input
+                    autoComplete="current-password"
+                    className="block w-full pl-10 pr-10 py-2.5 rounded-lg border border-outline-variant bg-surface-container-lowest text-on-surface placeholder:text-outline focus:outline-none focus:ring-2 focus:ring-secondary focus:border-transparent font-body-md text-body-md transition duration-150"
+                    id="password"
+                    name="password"
+                    placeholder="Ingresa tu contraseña"
+                    required
+                    type="password"
+                  />
+                  <button
+                    aria-label="Mostrar u ocultar contraseña"
+                    className="absolute inset-y-0 right-0 pr-3 flex items-center text-outline hover:text-on-surface focus:outline-none"
+                    id="toggle-password"
+                    onClick={togglePasswordVisibility}
+                    type="button"
+                  >
+                    <span className="material-symbols-outlined text-lg" data-icon="visibility" id="password-icon">visibility</span>
+                  </button>
+                </div>
+              </div>
+              {/* Remember Session Option */}
+              <div className="flex items-center justify-between pt-1">
+                <label className="flex items-center gap-2.5 cursor-pointer">
+                  <input className="w-4 h-4 rounded border-outline-variant text-primary-container focus:ring-secondary focus:ring-offset-0 transition" id="remember" name="remember" type="checkbox" />
+                  <span className="font-body-md text-body-md text-on-surface-variant select-none">Recordar sesión en este equipo</span>
+                </label>
+              </div>
+              {/* Primary Submit Button */}
+              <button
+                className="w-full flex items-center justify-center gap-2 bg-primary hover:bg-primary-container active:scale-[0.99] text-on-primary font-label-lg text-label-lg py-2.5 px-4 rounded-lg shadow-sm transition-all duration-150 cursor-pointer"
+                id="submit-btn"
+                type="submit"
+              >
+                <span>Iniciar sesión</span>
+                <span className="material-symbols-outlined text-lg" data-icon="arrow_forward">arrow_forward</span>
+              </button>
+            </form>
+            {/* Enterprise Protocol & Security Footer Indicator */}
+            <div className="pt-4 border-t border-outline-variant/60 flex items-center justify-center text-center">
+              <div className="flex items-center gap-1.5 text-outline font-label-sm text-label-sm"></div>
+            </div>
+          </div>
+          {/* Bottom Support Link */}
+          <div className="pt-6 text-center text-xs text-on-surface-variant border-t border-outline-variant/40 mt-6">
+            <p className="font-body-sm text-body-sm whitespace-nowrap">¿Problemas para ingresar? Contacta a tu <a className="text-secondary underline hover:text-primary font-medium" href="#">Administrador de Operaciones</a></p>
+            <p className="mt-2 text-[11px] text-outline">© 2026 CallCenter Enterprise Suite. Todos los derechos reservados.</p>
+          </div>
+        </div>
+      </main>
+      {/* Institutional Global Footer */}
+    </div>
+    </>
+  );
+};
