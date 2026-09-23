@@ -3,15 +3,20 @@
 // import reactLogo from './assets/react.svg'
 // import viteLogo from './assets/vite.svg'
 import './style/App.css';
-import { Header } from './components/header';
+import {Login} from './pages/login'
+import { createBrowserRouter} from 'react-router'; 
 
-
-function App() {
-  // const [count, setCount] = useState(0)
-
-  return (
-    <Header/>
-  )
-}
+// 1. Define your routes using an array of objects
+const App = createBrowserRouter([
+  {
+    path: '/',
+    children: [
+      {
+        index: true, // Matches the base path '/'
+        element: <Login/>,
+      }
+    ],
+  },
+]);
 
 export default App
