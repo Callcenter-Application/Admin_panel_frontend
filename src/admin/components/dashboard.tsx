@@ -166,13 +166,6 @@ export const DashboardSection = () => {
                             <h3 className="text-base font-bold text-slate-900">Acciones rápidas</h3>
                             <span className="text-xs text-slate-400">Atajos frecuentes</span>
                         </div>
-                        {/* Botón Principal del Wireframe: + Crear user */}
-                        <button className="flex items-center justify-center w-full gap-2 px-4 py-3 text-sm font-semibold text-white transition rounded-lg shadow-sm bg-brand-800 hover:bg-brand-900 focus:ring-2 focus:ring-offset-2 focus:ring-brand-800" type="button">
-                            <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2.2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                <path d="M12 4.5v15m7.5-7.5h-15" strokeLinecap="round" strokeLinejoin="round"></path>
-                            </svg>
-                            <span className="">+ Crear user</span>
-                        </button>
                         {/* Acciones secundarias en lista limpia */}
                         <div className="mt-4 space-y-2">
                             <button className="w-full flex items-center justify-between px-3.5 py-2 rounded-lg border border-slate-200 text-xs font-medium text-slate-700 hover:bg-slate-50 hover:border-slate-300 transition text-left" type="button">

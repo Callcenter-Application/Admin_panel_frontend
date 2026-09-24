@@ -1,4 +1,12 @@
+import { Link, useOutlet } from "react-router";
+import { ADMIN_PATHS } from "../admin.routes";
+
 export const UsersSection = () => {
+    const outlet = useOutlet();
+    if (outlet) {
+        return outlet;
+    }
+
     return (
         <div className="flex-1 px-6 py-6 space-y-6 overflow-y-auto sm:px-8" data-purpose="users-viewport">
             {/* Page Header with Title and Primary CTA */}
@@ -7,10 +15,10 @@ export const UsersSection = () => {
                 <h2 className="text-xl font-bold text-on-surface tracking-tight leading-tight text-[32px]">Usuarios</h2>
                 <p className="text-body-lg font-body-lg text-on-surface-variant mt-1.5">Gestiona los usuarios que tienen acceso a la plataforma.</p>
             </div>
-            <button className="inline-flex items-center justify-center gap-2.5 px-6 py-3.5 bg-primary-container text-on-primary rounded-lg font-semibold text-headline-sm hover:bg-primary transition-colors shadow-sm active:scale-[0.98]" type="button">
+            <Link to={ADMIN_PATHS.crearUsuario} className="inline-flex items-center justify-center gap-2.5 px-6 py-3.5 bg-primary-container text-on-primary rounded-lg font-semibold text-headline-sm hover:bg-primary transition-colors shadow-sm active:scale-[0.98]">
                 <span className="material-symbols-outlined text-[24px]" data-icon="person_add">person_add</span>
                 <span className="">+ Crear usuario</span>
-            </button>
+            </Link>
             </div>
 
             {/* Toolbar Card (Search, Dropdown Filters, Record Counter) */}
