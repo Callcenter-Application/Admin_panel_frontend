@@ -1,9 +1,5 @@
-// import { useState } from 'react'
-// import heroImg from './assets/hero.png'
-// import reactLogo from './assets/react.svg'
-// import viteLogo from './assets/vite.svg'
-import { AdminPanel } from "./admin/adminPanel";
 import { Login } from "./login/login";
+import { adminRoutes } from "./admin/admin.routes";
 import { createBrowserRouter } from "react-router";
 
 const App = createBrowserRouter([
@@ -11,13 +7,10 @@ const App = createBrowserRouter([
         path: "/",
         children: [
             {
-                index: true, 
+                index: true,
                 element: <Login/>
             },
-            {
-                path: "admin_panel",
-                element: <AdminPanel/>
-            }
+            adminRoutes
         ],
     },
 ]);
