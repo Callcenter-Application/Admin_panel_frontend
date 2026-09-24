@@ -12,7 +12,7 @@ const App = createBrowserRouter([
         children: [
             {
                 index: true, 
-                element: <Login/>,
+                element: <Login/>
             },
             {
                 path: "admin_panel",
