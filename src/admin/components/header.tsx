@@ -1,5 +1,5 @@
 import { useLocation } from "react-router";
-import { h1Content } from "../admin.controller";
+import { h1Content } from "../controllers/adminHeader.controller";
 
 export const HeaderSection = () => {
     const { pathname } = useLocation();
@@ -15,9 +15,7 @@ export const HeaderSection = () => {
                     Panel de administrador
                 </h1>
 
-                <span className="text-sm font-medium text-slate-300">
-                    /
-                </span>
+                <span className="text-sm font-medium text-slate-300">/</span>
 
                 <p className="text-sm font-medium truncate text-slate-500 sm:text-base">
                     {h1Content(pathname)}
@@ -70,9 +68,7 @@ export const HeaderSection = () => {
                     "
                 >
                     {/* Avatar */}
-                    <div
-                        className="flex items-center justify-center text-sm font-bold transition-transform duration-200 rounded-full shadow-sm h-9 w-9 bg-primary-container text-on-primary ring-2 ring-white group-hover:scale-105"
-                    >
+                    <div className="flex items-center justify-center text-sm font-bold transition-transform duration-200 rounded-full shadow-sm h-9 w-9 bg-primary-container text-on-primary ring-2 ring-white group-hover:scale-105">
                         LR
                     </div>
 

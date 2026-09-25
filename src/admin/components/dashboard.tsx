@@ -4,15 +4,10 @@ export const DashboardSection = () => {
             {/* BEGIN: ContentHeader */}
             <section className="flex flex-col justify-between gap-4 md:flex-row md:items-center" data-purpose="content-greeting">
                 <div>
-                    <h2 className="text-2xl font-bold tracking-tight text-slate-900">Buenos días, Luis</h2>
+                    <h2 className="text-2xl font-bold tracking-tight text-slate-900">Buenos días Luis</h2>
                     <p className="text-sm text-slate-500 mt-0.5">Resumen general de la plataforma</p>
                 </div>
                 <div className="flex items-center gap-3">
-                    {/* Estado en tiempo real del Gateway */}
-                    <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-emerald-50 text-emerald-700 border border-emerald-200">
-                        <span className="w-2 h-2 rounded-full bg-emerald-500"></span>
-                        Gateway Operativo 99.99%
-                    </span>
                     <span className="hidden text-xs text-slate-400 sm:inline">| Actualizado: hace 30s</span>
                 </div>
             </section>

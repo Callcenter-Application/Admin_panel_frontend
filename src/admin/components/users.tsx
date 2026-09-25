@@ -17,7 +17,7 @@ export const UsersSection = () => {
             </div>
             <Link to={ADMIN_PATHS.crearUsuario} className="inline-flex items-center justify-center gap-2.5 px-6 py-3.5 bg-primary-container text-on-primary rounded-lg font-semibold text-headline-sm hover:bg-primary transition-colors shadow-sm active:scale-[0.98]">
                 <span className="material-symbols-outlined text-[24px]" data-icon="person_add">person_add</span>
-                <span className="">+ Crear usuario</span>
+                <span className="">Crear usuario</span>
             </Link>
             </div>
 

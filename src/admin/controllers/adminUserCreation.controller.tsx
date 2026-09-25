@@ -1,68 +1,10 @@
-import { ADMIN_PATHS } from "./admin.routes";
-
-const ACTIVE_LINK_CLASSES =
-    "flex items-center gap-3 px-3.5 py-2.5 rounded-lg text-sm font-semibold bg-brand-800 text-white shadow-sm transition-colors group";
-const INACTIVE_LINK_CLASSES =
-    "flex items-center gap-3 px-3.5 py-2.5 rounded-lg text-sm font-medium text-slate-400 hover:text-slate-100 hover:bg-slate-800/70 transition-colors group";
-const ACTIVE_ICON_CLASSES = "w-5 h-5 text-brand-200";
-const INACTIVE_ICON_CLASSES = "w-5 h-5 text-slate-400 group-hover:text-slate-200";
-
-export function getSidebarLinkClasses(isActive: boolean): string {
-    return isActive ? ACTIVE_LINK_CLASSES : INACTIVE_LINK_CLASSES;
-}
-
-export function getSidebarIconClasses(isActive: boolean): string {
-    return isActive ? ACTIVE_ICON_CLASSES : INACTIVE_ICON_CLASSES;
-}
-
-export function h1Content(pathname: string): string {
-    if (pathname === ADMIN_PATHS.crearUsuario) {
-        return "Crear usuario";
-    } else if (pathname === ADMIN_PATHS.usuarios) {
-        return "Usuarios";
-    } else if (pathname === ADMIN_PATHS.dashboard) {
-        return "Dashboard";
-    } else {
-        return "Panel de Administración";
-    }
-}
-
-// ---------------------------------------------------------------------------
-// User creation form
-// ---------------------------------------------------------------------------
-
-export type UserRole = 1 | 2 | 3;
-
-export interface CreateUserFormState {
-    name: string;
-    email: string;
-    password: string;
-    confirmPassword: string;
-    role: UserRole;
-}
-
-export interface PasswordRequirements {
-    minLength: boolean;
-    maxLength: boolean;
-    hasUpper: boolean;
-    hasLower: boolean;
-    hasNumber: boolean;
-}
-
-export interface RoleOption {
-    id: UserRole;
-    name: string;
-    description: string;
-    icon: string;
-    footerIcon: string;
-    footerLabel: string;
-}
+import type { CreateUserFormState, PasswordRequirements, UserRole } from "../dto/admin.dto";
+import { DEFAULT_ROLE } from "./adminUsers.controller";
 
 export const NAME_MIN_LENGTH = 3;
 export const NAME_MAX_LENGTH = 50;
 export const PASSWORD_MIN_LENGTH = 8;
 export const PASSWORD_MAX_LENGTH = 50;
-export const DEFAULT_ROLE: UserRole = 2;
 
 export const EMPTY_CREATE_USER_FORM: CreateUserFormState = {
     name: "",
@@ -72,45 +14,17 @@ export const EMPTY_CREATE_USER_FORM: CreateUserFormState = {
     role: DEFAULT_ROLE,
 };
 
-export const ROLE_OPTIONS: RoleOption[] = [
-    {
-        id: 1,
-        name: "Operador",
-        description: "Acceso a las funciones necesarias para atender y gestionar llamadas.",
-        icon: "headset",
-        footerIcon: "call",
-        footerLabel: "Cola telefónica en vivo",
-    },
-    {
-        id: 2,
-        name: "Supervisor",
-        description: "Acceso a herramientas de supervisión y gestión de operadores.",
-        icon: "badge",
-        footerIcon: "monitoring",
-        footerLabel: "Monitoreo + Métricas",
-    },
-    {
-        id: 3,
-        name: "Administrador",
-        description: "Acceso a las funciones administrativas de la plataforma.",
-        icon: "shield",
-        footerIcon: "admin_panel_settings",
-        footerLabel: "Control global total",
-    },
-];
-
-export function getRoleName(roleId: UserRole): string {
-    return ROLE_OPTIONS.find((role) => role.id === roleId)?.name ?? "";
-}
-
 export function getNameCounterText(name: string): string {
     return `${name.length}/${NAME_MAX_LENGTH}`;
 }
 
-export function getPasswordRequirements(password: string): PasswordRequirements {
+export function getPasswordRequirements(
+    password: string,
+): PasswordRequirements {
     return {
         minLength: password.length >= PASSWORD_MIN_LENGTH,
-        maxLength: password.length > 0 && password.length <= PASSWORD_MAX_LENGTH,
+        maxLength:
+            password.length > 0 && password.length <= PASSWORD_MAX_LENGTH,
         hasUpper: /[A-Z]/.test(password),
         hasLower: /[a-z]/.test(password),
         hasNumber: /[0-9]/.test(password),
@@ -121,16 +35,25 @@ export function isPasswordValid(requirements: PasswordRequirements): boolean {
     return Object.values(requirements).every(Boolean);
 }
 
-export function doPasswordsMatch(password: string, confirmPassword: string): boolean {
+export function doPasswordsMatch(
+    password: string,
+    confirmPassword: string,
+): boolean {
     return confirmPassword.length > 0 && password === confirmPassword;
 }
 
 export function canSubmitCreateUserForm(form: CreateUserFormState): boolean {
     const nameLength = form.name.trim().length;
-    const nameValid = nameLength >= NAME_MIN_LENGTH && nameLength <= NAME_MAX_LENGTH;
+    const nameValid =
+        nameLength >= NAME_MIN_LENGTH && nameLength <= NAME_MAX_LENGTH;
     const emailValid = form.email.trim().length > 0;
-    const passwordValid = isPasswordValid(getPasswordRequirements(form.password));
-    const passwordsMatch = doPasswordsMatch(form.password, form.confirmPassword);
+    const passwordValid = isPasswordValid(
+        getPasswordRequirements(form.password),
+    );
+    const passwordsMatch = doPasswordsMatch(
+        form.password,
+        form.confirmPassword,
+    );
 
     return nameValid && emailValid && passwordValid && passwordsMatch;
 }
@@ -170,7 +93,9 @@ export function getMatchIcon(matches: boolean): string {
 }
 
 export function getMatchLabel(matches: boolean): string {
-    return matches ? "Las contraseñas coinciden" : "Las contraseñas no coinciden";
+    return matches
+        ? "Las contraseñas coinciden"
+        : "Las contraseñas no coinciden";
 }
 
 export function getRoleCardClasses(isSelected: boolean): string {
@@ -192,7 +117,9 @@ export function getRoleRadioOuterClasses(isSelected: boolean): string {
 }
 
 export function getRoleRadioDotClasses(isSelected: boolean): string {
-    return isSelected ? "w-2.5 h-2.5 rounded-full bg-primary" : "w-2.5 h-2.5 rounded-full bg-transparent";
+    return isSelected
+        ? "w-2.5 h-2.5 rounded-full bg-primary"
+        : "w-2.5 h-2.5 rounded-full bg-transparent";
 }
 
 export function getRoleTitleClasses(isSelected: boolean): string {
@@ -207,7 +134,10 @@ export function getRoleFooterClasses(isSelected: boolean): string {
         : "mt-4 pt-3 border-t border-outline-variant/40 flex items-center text-[11px] text-outline";
 }
 
-export function isCreateUserSubmitDisabled(form: CreateUserFormState, isSubmitting: boolean): boolean {
+export function isCreateUserSubmitDisabled(
+    form: CreateUserFormState,
+    isSubmitting: boolean,
+): boolean {
     return isSubmitting || !canSubmitCreateUserForm(form);
 }
 
@@ -216,7 +146,9 @@ export function getSubmitIcon(isSubmitting: boolean): string {
 }
 
 export function getSubmitIconClasses(isSubmitting: boolean): string {
-    return isSubmitting ? "text-lg material-symbols-outlined animate-spin" : "text-lg material-symbols-outlined";
+    return isSubmitting
+        ? "text-lg material-symbols-outlined animate-spin"
+        : "text-lg material-symbols-outlined";
 }
 
 export function getSubmitLabel(isSubmitting: boolean): string {
